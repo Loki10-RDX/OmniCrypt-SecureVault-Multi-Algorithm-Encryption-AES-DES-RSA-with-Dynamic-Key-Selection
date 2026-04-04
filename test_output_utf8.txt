@@ -1,0 +1,136 @@
+﻿============================================
+ OmniCrypt SecureVault - API Test Suite
+ Test User: testuser_45061@test.com
+============================================
+
+
+--- 1. SERVER HEALTH ---
+PASS [403] Server is running (expect 403 on root)
+  Detail: 
+
+--- 2. AUTHENTICATION TESTS ---
+PASS [200] Register user (no MFA)
+  Response: {"token":"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0dXNlcl80NTA2MUB0ZXN0LmNvbSIsImlhdCI6MTc3NTMwNzA5MSwiZXhwIjoxNzc1MzkzNDkxfQ.h_OcviJ1AF-SSveZJq0_GWbcsg-ObttiKGwi8XVs2EgAmeyKdWDXSSBQbFif6R2fP3qwuoezRgN9X19EV_soJg","email":"testuser_45061@test.com","role":"USER","mfaRequired":false,"message":"Registration successful"}
+  TOKEN received (non-MFA registration)
+PASS [400] Register duplicate email (expect 400)
+  Detail: {"status":400,"message":"Email already registered","timestamp":"2026-04-04T18:21:31.2684563","errors":null}
+PASS [400] Register invalid email (expect 400)
+  Detail: {"status":400,"message":"Validation failed","timestamp":"2026-04-04T18:21:31.2850757","errors":{"email":"Invalid email format"}}
+PASS [400] Register short password (expect 400)
+  Detail: {"status":400,"message":"Validation failed","timestamp":"2026-04-04T18:21:31.3022892","errors":{"password":"Password must be at least 6 characters"}}
+PASS [200] Login with valid credentials
+  Response: {"token":"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0dXNlcl80NTA2MUB0ZXN0LmNvbSIsImlhdCI6MTc3NTMwNzA5MSwiZXhwIjoxNzc1MzkzNDkxfQ.h_OcviJ1AF-SSveZJq0_GWbcsg-ObttiKGwi8XVs2EgAmeyKdWDXSSBQbFif6R2fP3qwuoezRgN9X19EV_soJg","email":"testuser_45061@test.com","role":"USER","mfaRequired":false,"message":"Login successful"}
+  JWT Token obtained
+PASS [401] Login with wrong password (expect 401)
+  Detail: {"status":401,"message":"Invalid email or password","timestamp":"2026-04-04T18:21:31.5950725","errors":null}
+PASS [401] Login non-existent user (expect 401)
+  Detail: {"status":401,"message":"Invalid email or password","timestamp":"2026-04-04T18:21:31.8401967","errors":null}
+
+--- 3. JWT & SECURITY TESTS ---
+PASS [403] GET /files without token (expect 403)
+  Detail: 
+PASS [403] GET /files with invalid token (expect 403)
+  Detail: 
+PASS [200] GET /auth/me with valid JWT
+  Response: {"email":"testuser_45061@test.com","role":"USER","mfaRequired":false,"message":"User info retrieved"}
+  User: testuser_45061@test.com | Role: USER
+PASS [403] GET /audit/logs as USER (expect 403)
+  Detail: 
+
+--- 4. MFA TESTS ---
+PASS [200] Register with MFA enabled
+  Response: {"email":"mfa_72210@test.com","mfaRequired":true,"mfaQrCode":"iVBORw0KGgoAAAANSUhEUgAAAV4AAAFeAQAAAADlUEq3AAAC5UlEQVR4Xu2ZUWokMQxEBX2AOVJf3UeaAxi8elVK8GZCyM/CMrIIg8d+6o+iJKsnsX4fM77u/BAH3uPAexx4jwPvceA9DrzHP4eDuK9n/kU8lhcrP9diJ+LqBLN+3iyKGZkyHyseo/Zbwc9IuWZq9Ehs5DphJBOMqv1gVrLNdMpCOhJbwlPmkVYZN47Sfjt4wczAS/6alZUCcvZaVu8OW6sLrV7/OGsFO3JHXqKgZKGYZSFHF9jNxHWUGlqr7Lpraf+Lkd4d1tWDnbLlAmRNhXSrXPg+sE7xjLNyHXQYdEO0J0r2gfOUatJ8kguLRiKOqmmtD6yZ5C6tmF0htU4NEXaXrgVMpx1BNWGbkg49g/RO8NRghoVyZKW+RtBv6bpXqdoIXjoNj2r2j9ZT3cZi9oFDV4/ryB0GJamsYLD/u6w6wEiHkXwZBWLKXd9K996wRMM2Ol14iZpKxQYQT2gEc+PolR/blFx8utzwWCeYHouX0CplDDnnYibxvp/YBQ4uHZ1yL2MbpzgrqLJGcCmmt91V64GS1YdJ6QNbOgzjU+0oy47qBU+97QobiXlt9eSl0QpGNL3z5pHKCtEKq/mkEbzUWmWYUZMJ7Zf4MFUj2L3FonE1y0hTr3uT30aKagPTScIzicaSajJSMrrB+Z3bB9tcpSHpFk0GawSnVrp6ovqM/FOV5Ze+TvBkfyBRHvnS0dpeem0y7w17J5AL2yCj9Jwfw1srWKd5pCbDwJbmoaZQT4N9L1idJFRNC//k15uy+hxROsGoJGAxirCm7WiHrqv9PjDilHluRAvM4xSvW8EO1GMauSUjZaVWzH4rGH2CfnLxsl/qud/6aysYcdJIMo/aL+lqOC43PhvBzxItapLP0+GHaO3oBZtRn1FBpX/qH5Qd4akfiJBOr3jqMIMnVEobeFFWQbMdUaLdiEm6JW0EBwGpOrrz6vF1vDSqCWkE/y4OvMeB9zjwHgfe48B7HHiP/wX+A+zWVSl1tQIAAAAAAElFTkSuQmCC","message":"Registration successful. Scan QR code with Google Authenticator."}
+  MFA Required flag: TRUE
+  QR Code returned: YES (length=1064)
+PASS [200] Login MFA user (expect mfaRequired)
+  Response: {"email":"mfa_72210@test.com","mfaRequired":true,"message":"MFA verification required. Enter your authenticator code."}
+  MFA required in response: TRUE
+  No token before OTP: CORRECT
+PASS [400] Verify wrong OTP (expect 400)
+  Detail: {"status":400,"message":"Invalid OTP code","timestamp":"2026-04-04T18:21:32.2465599","errors":null}
+
+--- 5. FILE ENCRYPTION TESTS ---
+PASS [200] GET /files (initial, expect empty)
+  Response: []
+  Testing AES encryption...
+PASS [200] AES file upload and encrypt
+  File ID: 1 | Algorithm: AES | EncTime: 16ms
+  Testing DES encryption...
+PASS [200] DES file upload and encrypt
+  File ID: 2 | Algorithm: DES
+  Testing RSA encryption (small text)...
+PASS [200] RSA file upload and encrypt
+  Testing HYBRID encryption...
+PASS [200] HYBRID file upload and encrypt
+  Testing RSA with large file (expect error)...
+PASS RSA rejected large file correctly
+  Testing invalid algorithm...
+PASS Invalid algorithm rejected
+
+--- 6. FILE LIST & DOWNLOAD TESTS ---
+PASS [200] GET /files (expect 4 files)
+  Response: [{"id":4,"originalFilename":"test_hybrid.txt","algorithm":"HYBRID","originalSize":560,"encryptedSize":576,"encryptionTimeMs":434,"createdAt":"2026-04-04T18:21:33.606295","status":"ENCRYPTED"},{"id":3,"originalFilename":"test_rsa.txt","algorithm":"RSA","originalSize":14,"encryptedSize":256,"encryptionTimeMs":1000,"createdAt":"2026-04-04T18:21:32.545989","status":"ENCRYPTED"},{"id":2,"originalFilename":"test_des.txt","algorithm":"DES","originalSize":33,"encryptedSize":40,"encryptionTimeMs":6,"createdAt":"2026-04-04T18:21:32.458457","status":"ENCRYPTED"},{"id":1,"originalFilename":"test_aes.txt","algorithm":"AES","originalSize":48,"encryptedSize":64,"encryptionTimeMs":16,"createdAt":"2026-04-04T18:21:32.361843","status":"ENCRYPTED"}]
+  Files count: 4
+PASS [200] GET /files/1 (file info)
+  Response: {"id":1,"originalFilename":"test_aes.txt","algorithm":"AES","originalSize":48,"encryptedSize":64,"encryptionTimeMs":16,"createdAt":"2026-04-04T18:21:32.361843","status":"ENCRYPTED"}
+PASS [200] GET /files/1/download (AES decrypt)
+  Response: 72 101 108 108 111 32 65 69 83 32 101 110 99 114 121 112 116 105 111 110 32 116 101 115 116 32 99 111 110 116 101 110 116 32 102 111 114 32 79 109 110 105 67 114 121 112 116 33
+  WARNING: Decrypted content may not match
+PASS [200] GET /files/2/download (DES decrypt)
+  Response: 72 101 108 108 111 32 68 69 83 32 108 101 103 97 99 121 32 101 110 99 114 121 112 116 105 111 110 32 116 101 115 116 33
+PASS [200] GET /files/3/download (RSA decrypt)
+  Response: 82 83 65 32 115 109 97 108 108 32 116 101 120 116
+PASS [200] GET /files/4/download (HYBRID decrypt)
+  Response: 84 104 105 115 32 105 115 32 97 32 116 101 115 116 32 111 102 32 116 104 101 32 104 121 98 114 105 100 32 65 69 83 43 82 83 65 32 101 110 99 114 121 112 116 105 111 110 32 109 101 116 104 111 100 46 32 84 104 105 115 32 105 115 32 97 32 116 101 115 116 32 111 102 32 116 104 101 32 104 121 98 114 105 100 32 65 69 83 43 82 83 65 32 101 110 99 114 121 112 116 105 111 110 32 109 101 116 104 111 100 46 32 84 104 105 115 32 105 115 32 97 32 116 101 115 116 32 111 102 32 116 104 101 32 104 121 98 114 105 100 32 65 69 83 43 82 83 65 32 101 110 99 114 121 112 116 105 111 110 32 109 101 116 104 111 100 46 32 84 104 105 115 32 105 115 32 97 32 116 101 115 116 32 111 102 32 116 104 101 32 104 121 98 114 105 100 32 65 69 83 43 82 83 65 32 101 110 99 114 121 112 116 105 111 110 32 109 101 116 104 111 100 46 32 84 104 105 115 32 105 115 32 97 32 116 101 115 116 32 111 102 32 116 104 101 32 104 121 98 114 105 100 32 65 69 83 43 82 83 65 32 101 110 99 114 121 112 116 105 111 110 32 109 101 116 104 111 100 46 32 84 104 105 115 32 105 115 32 97 32 116 101 115 116 32 111 102 32 116 104 101 32 104 121 98 114 105 100 32 65 69 83 43 82 83 65 32 101 110 99 114 121 112 116 105 111 110 32 109 101 116 104 111 100 46 32 84 104 105 115 32 105 115 32 97 32 116 101 115 116 32 111 102 32 116 104 101 32 104 121 98 114 105 100 32 65 69 83 43 82 83 65 32 101 110 99 114 121 112 116 105 111 110 32 109 101 116 104 111 100 46 32 84 104 105 115 32 105 115 32 97 32 116 101 115 116 32 111 102 32 116 104 101 32 104 121 98 114 105 100 32 65 69 83 43 82 83 65 32 101 110 99 114 121 112 116 105 111 110 32 109 101 116 104 111 100 46 32 84 104 105 115 32 105 115 32 97 32 116 101 115 116 32 111 102 32 116 104 101 32 104 121 98 114 105 100 32 65 69 83 43 82 83 65 32 101 110 99 114 121 112 116 105 111 110 32 109 101 116 104 111 100 46 32 84 104 105 115 32 105 115 32 97 32 116 101 115 116 32 111 102 32 116 104 101 32 104 121 98 114 105 100 32 65 69 83 43 82 83 65 32 101 110 99 114 121 112 116 105 111 110 32 109 101 116 104 111 100 46 32
+PASS [200] POST /files/1/decrypt
+  Response: {"id":1,"originalFilename":"test_aes.txt","algorithm":"AES","originalSize":48,"encryptedSize":64,"encryptionTimeMs":16,"decryptionTimeMs":0,"createdAt":"2026-04-04T18:21:32.361843","status":"ENCRYPTED"}
+
+--- 7. CROSS-USER ACCESS TEST ---
+PASS [200] Register second user
+  Response: {"token":"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMl80NTQ3OEB0ZXN0LmNvbSIsImlhdCI6MTc3NTMwNzA5NCwiZXhwIjoxNzc1MzkzNDk0fQ.M_zqrysTsl5yBr_aVfszMB6bpLKGCKx9I1T8utISZpXpbwqmfEFmUpD9OMJngAM9clfyzVhcSPtAJdq1VHbe5A","email":"user2_45478@test.com","role":"USER","mfaRequired":false,"message":"Registration successful"}
+PASS [400] User2 access User1 file (expect 400)
+  Detail: {"status":400,"message":"Access denied","timestamp":"2026-04-04T18:21:34.841091","errors":null}
+
+--- 8. DELETE FILE TEST ---
+PASS [204] DELETE /files/2
+  Response: 
+PASS [400] GET deleted file (expect 400)
+  Detail: {"status":400,"message":"File not found","timestamp":"2026-04-04T18:21:34.9151343","errors":null}
+
+--- 9. SECURITY TESTS ---
+PASS [400] SQL Injection in email (expect rejection)
+  Detail: {"status":400,"message":"Validation failed","timestamp":"2026-04-04T18:21:34.9376964","errors":{"email":"Invalid email format"}}
+PASS [400] XSS in email field (expect rejection)
+  Detail: {"status":400,"message":"Validation failed","timestamp":"2026-04-04T18:21:34.9465869","errors":{"email":"Invalid email format"}}
+PASS [400] Login with empty body (expect 400)
+  Detail: {"status":400,"message":"Validation failed","timestamp":"2026-04-04T18:21:34.9556767","errors":{"password":"Password is required","email":"Email is required"}}
+
+--- 10. DATABASE VALIDATION ---
+Database query results:
+  mysql: [Warning] Using a password on the command line interface can be insecure.
+  user_count
+  5
+  file_count
+  3
+  log_count
+  19
+  id	email	role	mfa_enabled	pwd_prefix
+  1	testuser_40003@test.com	USER	\0	$2a$10$WIm
+  2	mfa_35556@test.com	USER		$2a$10$zYr
+  3	testuser_45061@test.com	USER	\0	$2a$10$KbQ
+  4	mfa_72210@test.com	USER		$2a$10$kXQ
+  5	user2_45478@test.com	USER	\0	$2a$10$NfB
+  id	user_id	algorithm	original_filename	key_prefix	iv_prefix
+  1	3	AES	test_aes.txt	0ZoqtCXDr4	VHoAOZegKC
+  3	3	RSA	test_rsa.txt	NULL	NULL
+  4	3	HYBRID	test_hybrid.txt	NULL	WZkZRKQFcv
+
+============================================
+ TEST SUMMARY
+============================================
+Total tests: 36
+Passed: 36
+Failed: 0
+Pass rate: 100%
+
+Done.
